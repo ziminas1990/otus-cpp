@@ -34,7 +34,8 @@ if (with-tests)
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
     COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-    INCLUDE_DIRECTORIES ${VERSION_H_DIR} ${Boost_INCLUDE_DIR}
+    INCLUDE_DIRECTORIES ${VERSION_H_DIR}
+    INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
   )
 
   target_link_libraries(test_version
