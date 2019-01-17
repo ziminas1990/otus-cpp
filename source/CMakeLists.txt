@@ -1,35 +1,35 @@
 cmake_minimum_required(VERSION 3.2)
 
-option(with-tests "Build ip-filter-tests" OFF)
+option(with-tests "Build ip_filter-tests" OFF)
 
-project(homework-02)
+project(homework-02 VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
 
-add_executable(ip-filter ip_filter.cpp)
-set_target_properties(ip-filter PROPERTIES
+add_executable(ip_filter ip_filter.cpp)
+set_target_properties(ip_filter PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
 )
 
-install(TARGETS ip-filter RUNTIME DESTINATION bin)
+install(TARGETS ip_filter RUNTIME DESTINATION bin)
 
 if (with-tests)
   set(CMAKE_THREAD_PREFER_PTHREAD ON)
   find_package(Threads REQUIRED)
   find_package(GTest REQUIRED)
 
-  add_executable(ip-filter-tests ip_filter.cpp)
-  target_compile_definitions(ip-filter-tests PRIVATE AUTOTESTS_MODE)
-  set_target_properties(ip-filter-tests PROPERTIES
+  add_executable(ip_filter_tests ip_filter.cpp)
+  target_compile_definitions(ip_filter_tests PRIVATE AUTOTESTS_MODE)
+  set_target_properties(ip_filter_tests PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
     INCLUDE_DIRECTORIES ${GTEST_INCLUDE_DIRS}
   )
-  target_link_libraries(ip-filter-tests ${GTEST_BOTH_LIBRARIES} Threads::Threads)
+  target_link_libraries(ip_filter_tests ${GTEST_BOTH_LIBRARIES} Threads::Threads)
 
   enable_testing()
-  #add_test(test_version test_version)
+  add_test(general_tests ip_filter_tests)
 endif (with-tests)
 
 set(CPACK_GENERATOR DEB)

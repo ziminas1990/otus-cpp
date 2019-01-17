@@ -222,4 +222,15 @@ TEST(split_tests, success_case)
   EXPECT_EQ("0",   strings[2]);
   EXPECT_EQ("100", strings[3]);
 }
+
+TEST(parseIP_tests, success_case)
+{
+  std::string const sLine = "192.168.0.100";
+  IP ip = parseIP(split(sLine, '.'));
+  ASSERT_EQ(4, ip.size());
+  EXPECT_EQ(192, ip[0]);
+  EXPECT_EQ(168, ip[1]);
+  EXPECT_EQ(0,   ip[2]);
+  EXPECT_EQ(100, ip[3]);
+}
 #endif
