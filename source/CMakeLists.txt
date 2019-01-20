@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 option(with-tests "Build ip_filter-tests" OFF)
 
-project(homework-02 VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
+project(ip_filter VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
 
 add_executable(ip_filter ip_filter.cpp)
 set_target_properties(ip_filter PROPERTIES
