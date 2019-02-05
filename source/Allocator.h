@@ -8,96 +8,85 @@
 #define BLOCK_PREFIX "Block(" << this << ")::"
 
 template <typename T, size_t nCapacity>
-class awesome_allocator
+class dummy_allocator
 {
 public:
   using value_type = T;
 
   T* allocate(size_t nTotal)
   {
-    assert(nTotal == 1);
     T* pChunk = nullptr;
     // searchinkg for free chunk in existance blocks
     for (Block& block : blocks) {
-      pChunk = block.getChunk();
+      pChunk = block.getChunks(nTotal);
       if (pChunk)
-        break;
+        return pChunk;
     }
     // no free chunks - creating new block
-    if (!pChunk) {
-      std::cout << "... Creating new block" << std::endl;
-      Block newBlock;
-      newBlock.allocate();
-      pChunk = newBlock.getChunk();
-      blocks.push_back(std::move(newBlock));
-    }
+    size_t nNewBlockCapacity = blocks.empty() ? nCapacity : 2 * blocks.back().capacity();
+    Block newBlock(nNewBlockCapacity);
+    pChunk = newBlock.getChunks(nTotal);
+    blocks.push_back(std::move(newBlock));
     return pChunk;
   }
 
-  void deallocate(T* ptr, size_t nTotal)
+  void deallocate(T*, size_t)
   {
-    assert(nTotal == 1);
-    for (Block& block : blocks)
-      if (block.freeChunk(ptr))
-        return;
+    // deallocating is not supported
+    // all memory will be freed in desctuctor
   }
 
 private:
 
-  class Block {
+  class Block
+  {
   public:
-    Block() : pChunksCache(nullptr) {}
+    Block(size_t nTotalChunks)
+      : pChunks(reinterpret_cast<T*>(malloc(nTotalChunks * sizeof(T)))),
+        nTotalChunks(nTotalChunks), nUsedChunks(0)
+    {}
     Block(Block const& other) = delete;
     Block(Block&& other)
     {
-      nUsedChunksMask = std::move(other.nUsedChunksMask);
-      std::swap(pChunksCache, other.pChunksCache);
+      operator=(std::move(other));
     }
     ~Block() {
-      free(pChunksCache);
+      free(pChunks);
     }
 
-    Block& operator=(Block && other) = default;
-
-    void allocate() {
-      pChunksCache = reinterpret_cast<T*>(malloc(nCapacity * sizeof(T)));
+    Block& operator=(Block && other)
+    {
+      std::swap(pChunks,      other.pChunks);
+      std::swap(nTotalChunks, other.nTotalChunks);
+      std::swap(nUsedChunks,  other.nUsedChunks);
+      return *this;
     }
-    bool hasFreeChunk() const { return pChunksCache && !nUsedChunksMask.all(); }
-    T* getChunk();
-    bool freeChunk(T* pChunk);
-    bool isContainChunk(T* pChunk) const;
+
+    size_t capacity() const { return nTotalChunks; }
+    bool hasFreeChunks(size_t nRequiredTotal) const;
+    T* getChunks(size_t nRequiredTotal);
 
   private:
-    std::bitset<nCapacity> nUsedChunksMask;
-    T* pChunksCache = nullptr;
+    T* pChunks = nullptr;
+    size_t nTotalChunks = 0;
+    size_t nUsedChunks = 0;
   };
 
-  std::vector<Block, std::allocator<awesome_allocator::Block>> blocks;
+  std::vector<Block> blocks;
 };
 
 template<typename T, size_t nCapacity>
-T* awesome_allocator<T, nCapacity>::Block::getChunk()
+bool dummy_allocator<T, nCapacity>::Block::hasFreeChunks(size_t nRequiredTotal) const
 {
-  if (!pChunksCache || !hasFreeChunk())
+  return pChunks && nUsedChunks + nRequiredTotal < nTotalChunks;
+}
+
+template<typename T, size_t nCapacity>
+T* dummy_allocator<T, nCapacity>::Block::getChunks(size_t nRequiredTotal)
+{
+  if (!hasFreeChunks(nRequiredTotal))
     return nullptr;
-  size_t index = 0;
-  while (nUsedChunksMask[index]) index++;
-  nUsedChunksMask.set(index);
-  return pChunksCache + index;
-}
-
-template<typename T, size_t nCapacity>
-bool awesome_allocator<T, nCapacity>::Block::freeChunk(T* pChunk)
-{
-  if (!isContainChunk(pChunk))
-    return false;
-  size_t nIndex = pChunk - pChunksCache;
-  nUsedChunksMask.reset(nIndex);
-  return true;
-}
-
-template<typename T, size_t nCapacity>
-bool awesome_allocator<T, nCapacity>::Block::isContainChunk(T* pChunk) const
-{
-  return pChunksCache && pChunk >= pChunksCache && (pChunk - pChunksCache < nCapacity);
+  T* pChunk = pChunks + nUsedChunks;
+  nUsedChunks += nRequiredTotal;
+  return pChunk;
 }

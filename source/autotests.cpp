@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 TEST(Allocator, GetOnlyUniquePointers)
 {
   std::set<std::uint64_t*> pointers;
-  awesome_allocator<uint64_t, 16> allocator;
+  dummy_allocator<uint64_t, 16> allocator;
   for (size_t i = 0; i < 16 * 100; ++i)
   {
     std::uint64_t *ptr = allocator.allocate(1);
