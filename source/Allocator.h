@@ -38,6 +38,9 @@ public:
     // all memory will be freed in desctuctor
   }
 
+  // rebind has been added for building on travis (gcc 4.8.4 requires rebind definition)
+  template<class U> struct rebind { using other = dummy_allocator<U, nCapacity> ; };
+
 private:
 
   class Block
