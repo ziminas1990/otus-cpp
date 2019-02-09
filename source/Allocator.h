@@ -12,6 +12,11 @@ class dummy_allocator
 {
 public:
   using value_type = T;
+  // Definitions above are required by travis-ci compiler (gcc 4.8.4)
+  using pointer         = value_type*;
+  using const_pointer   = const pointer;
+  using reference       = value_type&;
+  using const_reference = const reference;
 
   T* allocate(size_t nTotal)
   {
