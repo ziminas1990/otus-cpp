@@ -40,7 +40,7 @@ public:
   void deallocate(T*, size_t)
   {
     // deallocating is not supported
-    // all memory will be freed in desctuctor
+    // all memory will be freed in destructor
   }
 
 
