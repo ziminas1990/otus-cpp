@@ -24,6 +24,8 @@ public:
     }
     // no free chunks - creating new block
     size_t nNewBlockCapacity = blocks.empty() ? nCapacity : 2 * blocks.back().capacity();
+    if (nNewBlockCapacity < nTotal)
+      nNewBlockCapacity = nTotal;
     Block newBlock(nNewBlockCapacity);
     pChunk = newBlock.getChunks(nTotal);
     blocks.push_back(std::move(newBlock));
