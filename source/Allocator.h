@@ -43,6 +43,15 @@ public:
     // all memory will be freed in desctuctor
   }
 
+
+  template<class... Args >
+  void construct(T* p, Args&&... args )
+  {
+    ::new(p) T(std::forward<Args>(args)...);
+  }
+
+  void destroy(T* p) { p->~T(); }
+
   // rebind has been added for building on travis (gcc 4.8.4 requires rebind definition)
   template<class U> struct rebind { using other = dummy_allocator<U, nCapacity> ; };
 

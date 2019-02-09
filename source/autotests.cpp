@@ -4,9 +4,6 @@
 #include <gtest/gtest.h>
 #include <set>
 
-#include <iostream>
-#include <vector>
-
 int main(int argc, char* argv[])
 {
   ::testing::InitGoogleTest(&argc, argv);
