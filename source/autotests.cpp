@@ -39,8 +39,7 @@ TEST(print_ip, on_long)
 
 TEST(print_ip, on_string)
 {
-  using namespace std::string_literals;
-  ASSERT_EQ("AB.CD.EF.GH", print_ip("AB.CD.EF.GH"s));
+  ASSERT_EQ("AB.CD.EF.GH", print_ip("AB.CD.EF.GH"));
 }
 
 TEST(print_ip, on_vector)
