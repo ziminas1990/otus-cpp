@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <tuple>
 
 // Very usefull and clear article about SFINAE:
 // http://scrutator.me/post/2016/12/12/sfinae.aspx
@@ -68,4 +69,74 @@ print_ip(T ip)
 std::string print_ip(std::string const& ip)
 {
   return ip;
+}
+
+//========================================================================================
+// Далее попытка реализовать случай для tuple
+//========================================================================================
+
+// Returns first type from types list T...
+template<typename... T>
+struct GetHead;
+
+template<typename T>
+struct GetHead<T> { using type = T; };
+
+template<typename Head, typename... Tail>
+struct GetHead<Head, Tail...> { using type = Head; };
+
+// Check that all types in T... are the same
+template<typename... T>
+struct IsHomogeneous;
+
+template<typename T>
+struct IsHomogeneous<T>
+{
+  constexpr static bool value = true;
+};
+
+template<typename T, typename S>
+struct IsHomogeneous<T, S>
+{
+  constexpr static bool value = std::is_same<T, S>::value;
+};
+
+template<typename T, typename... Tail>
+struct IsHomogeneous<T, Tail...>
+{
+  using Head = typename GetHead<Tail...>::type;
+  constexpr static bool value =
+      IsHomogeneous<T, Head>::value && IsHomogeneous<Tail...>::value;
+};
+
+
+// Printer for tuple
+template<class Tuple, std::size_t TupleSize>
+struct TuplePrinter;
+
+template<class Tuple>
+struct TuplePrinter<Tuple, 1> {
+  static void print(std::ostream& out, Tuple const& tuple)
+  {
+    out << std::get<0>(tuple);
+  }
+};
+
+template<class Tuple, std::size_t TupleSize>
+struct TuplePrinter {
+  static void print(std::ostream& out, Tuple const& tuple)
+  {
+    TuplePrinter<Tuple, TupleSize - 1>::print(out, tuple);
+    out << "." << std::get<TupleSize - 1>(tuple);
+  }
+};
+
+// And finally - print_ip specialization for tuple!
+template<typename... T>
+typename std::enable_if<IsHomogeneous<T...>::value, std::string>::type
+print_ip(std::tuple<T...> const& ip)
+{
+  std::stringstream ss;
+  TuplePrinter<std::tuple<T...>, sizeof...(T)>::print(ss, ip);
+  return ss.str();
 }
