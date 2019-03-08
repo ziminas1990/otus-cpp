@@ -53,3 +53,9 @@ TEST(print_ip, on_list)
   ASSERT_EQ("1.2.3.4.5", print_ip(std::list<int>{1,2,3,4,5}));
   ASSERT_EQ("10000.1", print_ip(std::list<int>{10000,1}));
 }
+
+TEST(print_ip, on_tuple)
+{
+  ASSERT_EQ("1.2.3.4.5", print_ip(std::make_tuple(1, 2, 3, 4, 5)));
+  ASSERT_EQ("5.4.A.B", print_ip(std::make_tuple("5", "4", "A", "B")));
+}
