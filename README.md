@@ -29,3 +29,6 @@ cmake --build .
 cmake --build . --target test
 cmake --build . --target package
 ```
+
+# Usefull links
+  - [bmegli/doxygen-with-travis-ci.md](https://gist.github.com/bmegli/e22ba525dda0b197b2d4440d08f43ae2) - article, that helped me to run and publish doxygen files via travis-ci
