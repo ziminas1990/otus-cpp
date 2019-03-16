@@ -1,0 +1,41 @@
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - doxygen
+
+before_script:
+# Building & installing gtest:
+- CHECKOUT_DIR=$(pwd)
+- GTEST_DIR=${CHECKOUT_DIR}/3rdparty/gtest
+- git clone https://github.com/google/googletest.git ${GTEST_DIR}/sources
+- mkdir ${GTEST_DIR}/build
+- cd ${GTEST_DIR}/build
+- cmake ${GTEST_DIR}/sources -DCMAKE_INSTALL_PREFIX=${GTEST_DIR}/install
+- cmake --build . -- -j5
+- cmake --build . --target install
+
+script:
+- mkdir ${CHECKOUT_DIR}/build
+- cd ${CHECKOUT_DIR}/build
+- cmake ${CHECKOUT_DIR}/source -Dwith-tests=ON -DGTEST_ROOT=${GTEST_DIR}/install
+- cmake --build .
+- cmake --build . --target test
+- cmake --build . --target package
+- doxygen ${CHECKOUT_DIR}/Doxyfile
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script:
+    - curl -T print_ip-1.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uziminas1990:$BINTRAY_API_KEY "https://api.bintray.com/content/ziminas1990/otus-cpp/homework-05/1.0.$TRAVIS_BUILD_NUMBER/print_ip-1.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+    on:
+      branch: homework-05
+  #- provider: pages
+  #  target-branch: homework-05-pages
+  #  skip_cleanup: true
+  #  local_dir: ${CHECKOUT_DIR}/build/html
+  #  github_token: $GH_REPO_TOKEN
+  #  on:
+  #    branch: homework-05
