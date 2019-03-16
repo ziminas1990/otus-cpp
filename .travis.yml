@@ -6,6 +6,7 @@ addons:
       - doxygen
 
 script:
+- CHECKOUT_DIR=$(pwd)
 - mkdir ${CHECKOUT_DIR}/build
 - cd    ${CHECKOUT_DIR}/build
 - cmake ${CHECKOUT_DIR}/libPicasso
