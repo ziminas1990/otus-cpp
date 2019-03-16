@@ -18,9 +18,10 @@ deploy:
   - provider: script
     skip_cleanup: true
     script:
-    - PACKAGE_VERSION=1.0.$TRAVIS_BUILD_NUMBER
-    - PACKAGE_NAME=libPicasso-${PACKAGE_VERSION}-Linux.deb
-    - curl -T $PACKAGE_NAME -uziminas1990:$BINTRAY_API_KEY "https://api.bintray.com/content/ziminas1990/otus-cpp/homework-05/${PACKAGE_VERSION}/${PACKAGE_NAME};deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+#    - PACKAGE_VERSION=1.0.$TRAVIS_BUILD_NUMBER
+#    - PACKAGE_NAME=libPicasso-${PACKAGE_VERSION}-Linux.deb
+#    - curl -T $PACKAGE_NAME -uziminas1990:$BINTRAY_API_KEY "https://api.bintray.com/content/ziminas1990/otus-cpp/homework-05/${PACKAGE_VERSION}/${PACKAGE_NAME};deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+     - curl -T libPicasso-1.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uziminas1990:$BINTRAY_API_KEY "https://api.bintray.com/content/ziminas1990/otus-cpp/homework-05/1.0.$TRAVIS_BUILD_NUMBER/libPicasso-1.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
     on:
       branch: homework-05
   - provider: pages
