@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 option(with-tests "Build autotests" OFF)
 
-set(PROJECT_NAME marix)
+set(PROJECT_NAME matrix)
 set(PROJECT_TESTS_NAME ${PROJECT_NAME}_tests)
 
 project(${PROJECT_NAME} VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
