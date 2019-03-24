@@ -7,7 +7,7 @@ set(PROJECT_TESTS_NAME ${PROJECT_NAME}_tests)
 
 project(${PROJECT_NAME} VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
 
-add_executable(${PROJECT_NAME} main.cpp matrix.cpp)
+add_executable(${PROJECT_NAME} main.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON

@@ -43,7 +43,7 @@ TEST(MatrixTests, insertingElements)
       if (x % 3 && y % 3) {
         ASSERT_EQ((x << 8) + y, matrix[x][y]);
       } else {
-        ASSERT_EQ(0u, matrix[x][y]);
+        ASSERT_EQ(0, matrix[x][y]);
       }
     }
   }
@@ -57,7 +57,7 @@ TEST(MatrixTests, insertingDefaultValue)
   EXPECT_EQ(0u, matrix.size());
 
   matrix[5][5] = 10;
-  EXPECT_EQ(1,  matrix.size());
+  EXPECT_EQ(1u, matrix.size());
   EXPECT_EQ(10, matrix[5][5]);
 
   matrix[5][5] = defaultValue;

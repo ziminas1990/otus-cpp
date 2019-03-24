@@ -75,7 +75,7 @@ public:
       return I;
     }
 
-    const_iterator& operator++() { moveToNextValid(); }
+    const_iterator& operator++() { moveToNextValid(); return *this; }
     std::tuple<size_t, size_t, T> operator*() const;
 
     bool operator==(const const_iterator& other) const
