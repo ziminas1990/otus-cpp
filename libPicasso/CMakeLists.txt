@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.2)
+
+option(with-tests "Build autotests" OFF)
+
+set(PROJECT_NAME libPicasso)
+
+project(${PROJECT_NAME} VERSION 1.0.$ENV{TRAVIS_BUILD_NUMBER})
+
+file(GLOB_RECURSE CPP_FILES *.cpp)
+file(GLOB_RECURSE H_FILES   *.h)  # Small hack for QtCreator
+
+add_library(${PROJECT_NAME} ${CPP_FILES} ${H_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED ON
+  COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
+)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/include)
+
+install(TARGETS   ${PROJECT_NAME} ARCHIVE     DESTINATION lib)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION .)
+
+set(CPACK_GENERATOR DEB)
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_CONTACT ziminas1990@gmail.com)
+include(CPack)
