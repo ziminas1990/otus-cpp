@@ -1,0 +1,237 @@
+syntax = "proto3";
+
+
+message INavigation {
+
+  message GetPosition {}
+  message GetPositionResponse {
+    double x   = 1;
+    double y   = 2;
+    double vx  = 4;
+    douvle vy  = 5;
+  }
+  
+  oneof choice {
+    GetPosition positionRequest = 1;
+    
+    GetPositionResponse positionResponse = 2;
+  }
+}
+
+message IEngine {
+
+  message GetSpecification {}
+  message GetSpecificationResponse {
+    uint64 maxThrust = 1;
+  }
+
+  message SetThrust {
+    double i      = 1;
+    double j      = 2;
+    uint64 thrust = 3;
+  }
+  
+  message GetThrust {}
+  message GetThrustResponse {
+    double i      = 1;
+    double j      = 2;
+    uint64 thrust = 3;
+  }
+  
+  oneof choice {
+    SetThrust        setThrustCommand     = 1;
+    GetThrust        thrustRequest        = 2;
+    GetSpecification specificationRequest = 3;
+    
+    GetThrustResponse        thrustResponse        = 4;
+    GetSpecificationResponse specificationResponse = 5;
+  }
+}
+
+message IRocketLauncher {
+  message Launch {}
+  message Boom   {}
+  
+  oneof choice {
+    Launch launchCommand   = 1;
+    Bool   boomCommand     = 2;
+    
+    // Inherited interfaces
+    IEngine engine         = 3;
+    INavigation navigation = 4;
+  }
+}
+
+message IMiner
+{
+  message StartMining
+  {
+    string asteroidName = 1;
+  }
+  
+  message YieldNotify
+  {
+    uint32 minerals = 1;
+    uint32 mettals  = 2;
+  }
+  
+  message StoppedNotify {}
+  
+  oneof choice {
+    StartMining startMiningCommand = 1;
+    
+    YieldNotify   yieldNotify   = 2;
+    StoppedNotify stoppedNotify = 3;
+  }
+}
+
+message ModuleInfo {
+  string id;
+  string type;
+}
+
+message ICommutator
+{
+  message GetSpecification {}
+  message GetSpecificationResponse {
+    repeated ModuleInfo modules = 1;
+  }
+  
+  message Connect
+  {
+    string moduleName = 1;
+  }
+  message ConnectResponse
+  {
+    uint32 sessionId = 1;
+  }
+  
+  message PassMessage
+  {
+    uint32 sessionId     = 1;
+    bytes  binaryMessage = 2;
+  }
+  message OnMessageReceived
+  {
+    uint32 sessionId     = 1;
+    bytes  binaryMessage = 2;
+  }
+  
+  oneof choice {
+    GetSpecification specificationRequest = 1;
+    Connect          connectRequest       = 2;
+    PassMessage      passMessageRequest   = 3;
+    
+    GetSpecificationResponse specificationResponse = 4;
+    ConnectResponse          connectResponse       = 5;
+    OnMessageReceived        onMessageReceived     = 6;
+  }
+}
+
+message IResourceContainer
+{
+  message GetSpecification {}
+  message GetStatus {}
+  
+  message GetSpecificationResponse {
+    uint32 volume = 1;
+  }
+  message GetStatusResponse {
+    uint32 minerals    = 1;
+    uint32 mettals     = 2;
+    uint32 ice         = 3;
+    uint32 volumeUsed  = 4;
+  }
+  
+  oneof choice {
+    GetSpecification specificationRequest = 1;
+    GetStatus        statusRequest        = 2;
+    PickUp           pickUpCommand        = 3;
+    
+    GetSpecificationResponse specificationResponse = 4;
+    GetStatusResponse        statusResponse        = 5;
+    PickedUpNotification     pickedUpNotification  = 6;
+  }
+}
+
+message IResourceInjector
+{
+  message Inject
+  {
+    string shipName = 1
+    uint32 minerals = 2;
+    uint32 mettals  = 3;
+  }
+  
+  message InjectStatus
+  {
+    bool success = 1;
+  }
+}
+
+message AssemblyUnit
+{
+  string type;
+  uint32 minerals;
+  uint32 mettals;
+  uint16 time;
+}
+
+message IYard
+{
+  message GetSpecification {}
+  message Build
+  {
+    string type = 1;
+  }
+  message GetStatus {}
+  
+  message GetSpecificationResponse
+  {
+    repeated AssemblyUnit units = 1;
+  }
+  message BuildResponse
+  {
+    bool inProgress = 1;
+  }
+  message GetStatusResponse
+  {
+    uint16 timeRemain = 1;
+    uint16 timeTotal  = 2;
+  }
+  
+  oneof choice
+  {
+    GetSpecification specificationRequest = 1;
+    Build            buildCommand         = 2;
+    GetStatus        statusRequest        = 3;
+    
+    GetSpecificationResponse specificationResponse = 4;
+    BuildResponse            buildResponse         = 5;
+    GetStatusResponse        statusResponse        = 6;
+  }
+}
+
+message Ship
+{
+
+
+  oneof chioce {
+  
+    // Inherited interfaces
+    ICommutator commutator  = 1;
+    INavigation navigation  = 2;
+  }
+}
+
+message CommandCenter
+{
+  oneof choice {
+    // Inherited interfaces
+    ICommutator        commutator  = 1;
+    INavigation        navigation  = 2;
+    IResourceContainer storage     = 3;
+    IYard              yard        = 4;
+  }
+}
+
